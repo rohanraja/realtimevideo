@@ -20,6 +20,5 @@ RespiVision::RespiVision(int pBuffLen, VideoCapture *pCapture):RealTimeVideo(pBu
 
 float RespiVision::processSample(Mat &sample){
 
-  sleep(1);
   return sum(sample)[0] ;
 }

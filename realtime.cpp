@@ -60,15 +60,21 @@ void RealTimeVideo::producer(){
 
   while(1){
 
-    bool bSuccess = capture->read(f); 
+    try{
+      capture->read(f); 
+    }
+    catch(exception &e){
+      cout << e.what() ;
+    }
 
+      waitKey(5);
     frame = f;
     
-    if (!bSuccess)
-   {
-         cout << "ERROR: Cannot read a frame from video file" << endl;
-         break;
-    }
+   //  if (!bSuccess)
+   // {
+   //       cout << "ERROR: Cannot read a frame from video file" << endl;
+   //       break;
+   //  }
     // putFrameInBuffer(frame);
     
   }
@@ -86,11 +92,12 @@ void RealTimeVideo::UI(){
     waitKey(1000);
   while(true){
 
-      if(waitKey(50) >= 0) break;
+      if(waitKey(5) >= 0) break;
 
         try{
           showFrameOutput();
         }catch(exception &e){
+
         }
   }
 
@@ -106,8 +113,8 @@ void RealTimeVideo::runThreads(){
     waitKey(10);
 
     cerr << "\nLaunched Threads\n" ;
+    producer_t.join();
 
-    waitKey(100000);
 }
 
 void RealTimeVideo::processor(){
