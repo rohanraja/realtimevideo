@@ -6,7 +6,9 @@ using namespace std;
 int main(int argc, const char *argv[])
 {
   
-  RealTimeVideo r ;
+  VideoCapture cap(0); // open the default camera
+  RealTimeVideo r(100, &cap) ;
+  r.runThreads();
 
   return 0;
 }
