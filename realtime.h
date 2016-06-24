@@ -9,9 +9,12 @@ class RealTimeVideo{
 
   VideoCapture *capture ;
   Mat *buffer;
+  vector<Mat> frameBuffer ;
   int buffLen ;
   int pos, newpos;
   int i ;
+  Mat frame, gray;
+  float ans ;
 
   bool putFrameInBuffer(Mat &f);
 
@@ -19,7 +22,6 @@ class RealTimeVideo{
 public:
 
 
-  Mat frame, gray;
   RealTimeVideo();
   RealTimeVideo(int buffLen, VideoCapture *capture);
 
@@ -27,6 +29,10 @@ public:
   void processor();
   void UI();
   void runThreads();
+
+  virtual float processSample(Mat &);
+  virtual Mat getSample();
+  virtual void showFrameOutput();
 
 };
 
