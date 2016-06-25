@@ -30,13 +30,13 @@ int main(int argc, const char *argv[])
   if(argc > 1){
 
     VideoCapture cap(argv[1]); // open the default camera
-    RespiVision r(100, &cap) ;
+    RespiVision r(1000, &cap) ;
     r.runThreads();
   }
   else{
 
     VideoCapture cap(0); // open the default camera
-    RespiVision r(100, &cap) ;
+    RespiVision r(1000, &cap) ;
     r.runThreads();
   }
 

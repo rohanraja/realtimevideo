@@ -5,12 +5,14 @@ using namespace std;
 
 class RespiVision : public RealTimeVideo{
 
+  int Fs ;
+ 
   public:
 
   RespiVision();
 
   RespiVision(int buffLen, VideoCapture *capture);
 
-  float processSample(Mat &);
+  float processSample(vector<Mat> );
 
 };

@@ -1,4 +1,4 @@
-## Compiling:
+## Compiling
 
 This program requires OpenCV 3 to be installed.
 

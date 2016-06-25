@@ -14,6 +14,7 @@ add_executable(
   main.cpp
   respi.cpp
   realtime.cpp
+  helpers.cpp
 )
 
 target_link_libraries( respi 

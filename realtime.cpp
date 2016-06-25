@@ -3,20 +3,6 @@
 using namespace cv;
 using namespace std;
 
-void drawText(Mat &f, string text){
-
-        int fontFace = FONT_HERSHEY_SCRIPT_SIMPLEX;
-        double fontScale = 1.8;
-        int thickness = 2;
-        int baseline=0;
-        Size textSize = getTextSize(text, fontFace,
-                            fontScale, thickness, &baseline);
-        Point textOrg((f.cols - textSize.width)/2 - 100,
-              (f.rows + textSize.height)/2 - 100);
-        putText(f, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness, 1);
-
-
-}
 
 RealTimeVideo::RealTimeVideo(){
 
@@ -27,55 +13,39 @@ RealTimeVideo::RealTimeVideo(int pBuffLen, VideoCapture *pCapture)
 {
   capture = pCapture;
   buffLen = pBuffLen;
+  frameBuffer.resize(buffLen);
 
-  ans = 34;
+  ans = 0;
+  sampleLen = 200;
+
 
   cerr << "\nInitialized RealtimeVideo\n" ;
 
 }
 
 bool RealTimeVideo::putFrameInBuffer(Mat &f){
-
     
-    // gray = preProcesor(frame);
-    gray = f;
-    // gray = gray(roi);
+    pos = idx%buffLen;
+    frameBuffer[pos] = f.clone();
+    idx++;
 
-    newpos = i%buffLen;
-    uchar *arr = gray.data ;
-    rep(j, gray.total())
-      buffer->at<uchar>(j, newpos) = arr[j];
-    pos = newpos;
+    return true;
 
-    i++;
-  return true;
 }
 
 void RealTimeVideo::producer(){
 
   cerr << "\nStarting Producer Thread\n" ;
 
-  i = 0;
+  idx = 0;
   Mat f;
 
   while(1){
 
-    try{
-      capture->read(f); 
-    }
-    catch(exception &e){
-      cout << e.what() ;
-    }
-
-      waitKey(5);
-    frame = f;
+    capture->read(f); 
+    frame = f.clone();
+    putFrameInBuffer(f);
     
-   //  if (!bSuccess)
-   // {
-   //       cout << "ERROR: Cannot read a frame from video file" << endl;
-   //       break;
-   //  }
-    // putFrameInBuffer(frame);
     
   }
 }
@@ -83,6 +53,7 @@ void RealTimeVideo::producer(){
 void RealTimeVideo::showFrameOutput(){
 
           drawText(frame, to_string(ans));
+          drawCircle(frame, pt);
           imshow("output", frame);
 
 }
@@ -92,7 +63,7 @@ void RealTimeVideo::UI(){
     waitKey(1000);
   while(true){
 
-      if(waitKey(5) >= 0) break;
+      if(waitKey(50) >= 0) break;
 
         try{
           showFrameOutput();
@@ -113,6 +84,8 @@ void RealTimeVideo::runThreads(){
     waitKey(10);
 
     cerr << "\nLaunched Threads\n" ;
+
+    waitKey(0);
     producer_t.join();
 
 }
@@ -120,7 +93,7 @@ void RealTimeVideo::runThreads(){
 void RealTimeVideo::processor(){
 
   cerr << "\nStarting Processor Thread\n" ;
-  Mat sample;
+  vector<Mat> sample;
   while(1){
 
     sample = getSample();
@@ -130,12 +103,17 @@ void RealTimeVideo::processor(){
 
 }
 
-Mat RealTimeVideo::getSample(){
+vector<Mat> RealTimeVideo::getSample(){
+  
+  int end = pos ;
+  int st = pos - sampleLen;
+  if(st < 0)
+    st = 0;
 
-  Mat ret;
-  return frame ;
+  vector<Mat> ret(frameBuffer.begin()+st, frameBuffer.begin()+end);
+  return ret ;
 }
-float RealTimeVideo::processSample(Mat &sample){
+float RealTimeVideo::processSample(vector<Mat> sample){
 
-  return 12 ;
+  return 1 ;
 }
